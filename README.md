@@ -19,6 +19,8 @@ wget https://github.com/jodersky/codename/releases/download/v0.1.0/codename_linu
 
 - `codename "A a n"`:
   
+  >earnestly rare clown
+  
   >very windy yaw
   
   >awful patchy zero
