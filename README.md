@@ -6,6 +6,39 @@ This is a scala-native project. The binary can be built by running
 `sbt nativeLink`. Version information is derived from git, with
 initial "v" dropped (e.g. the tag v1.2.3 represents version 1.2.3).
 
+## Examples
+
+- `codename "A a n"`:
+  
+  >very windy yaw
+  
+  >awful patchy zero
+  
+  >henceforth catchy graphite
+  
+  >nonethless furious aleph
+  
+  >otherwise jumpy route
+
+- `codename "a-n"`
+  
+  >mellow-gazelle
+  
+  >united-five
+  
+  >optuse-joke
+
+- `codename "A a n a a n n"`
+  
+  >approximately inherent omicron fabulous zillion unit set
+
+## Contributing
+
+Contributions are welcome, especially new words! It's hard to describe
+what words should be included, but the rule of thumb is to use words
+that generally have a low frequency in English text (although not
+necessarily archaic), and that sound interesting when said out loud.
+
 ## Usage
 Refer to the help message of the utility (`codename --help`) for an
 authoritative answer.
