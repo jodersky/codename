@@ -6,6 +6,15 @@ This is a scala-native project. The binary can be built by running
 `sbt nativeLink`. Version information is derived from git, with
 initial "v" dropped (e.g. the tag v1.2.3 represents version 1.2.3).
 
+### Download
+If you are on Linux on an x86_64 platform, a pre-built binary can be
+obtained from the GitHub releases page, or with the following
+commands:
+
+```
+wget https://github.com/jodersky/codename/releases/download/v0.1.0/codename_linux_amd64.xz -O - | unxz - > codename && chmod +x ./codename
+```
+
 ## Examples
 
 - `codename "A a n"`:
