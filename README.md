@@ -12,7 +12,7 @@ obtained from the GitHub releases page, or with the following
 commands:
 
 ```
-wget https://github.com/jodersky/codename/releases/download/v0.2.0/codename_linux_amd64.xz -O - | unxz - > codename && chmod +x ./codename
+wget https://github.com/jodersky/codename/releases/download/v0.2.1/codename_linux_amd64.xz -O - | unxz - > codename && chmod +x ./codename
 ```
 
 ## Examples
