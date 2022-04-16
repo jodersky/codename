@@ -10,11 +10,15 @@ val help =
      |
      |Specification:
      |
-     | SPEC ::= { 'A' | 'a' | 'n' | SEP }
-     | SEP  ::= char
+     |  SPEC ::= { 'A' | 'a' | 'n' | 'd' | SEP }
+     |  SEP  ::= char
      |
-     |where an 'A' is replaced by a random adverb, an 'a' by an adjective and
-     |an 'n' by a noun.
+     |where the quoted letters will be substituted randomly by the following:
+     |
+     |  A: an adverb
+     |  a: an adjective
+     |  n: a nound
+     |  d: a digit [0-9]
      |
      |For example, the specification "A-a-n" will produce a code name such as:
      |"extra-pickled-umbrella".""".stripMargin
@@ -52,6 +56,7 @@ def main(args: Array[String]): Unit = {
     case 'A'   => codenames.Spec.Adverb
     case 'a'   => codenames.Spec.Adjective
     case 'n'   => codenames.Spec.Noun
+    case 'd'   => codenames.Spec.Digit
     case other => codenames.Spec.Separator(other.toString)
   }
 
