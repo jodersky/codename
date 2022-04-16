@@ -26,7 +26,7 @@ object codename extends ScalaNativeModule {
 
   def strip = T {
     os.copy(link().path, T.dest / "out")
-    os.proc("strip", T.dest / "out")
+    os.proc("strip", T.dest / "out").call()
     PathRef(T.dest / "out")
   }
 }
