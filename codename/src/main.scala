@@ -198,8 +198,9 @@ val nouns = Array(
 )
 
 val help =
-  """|Usage: codename [OPTIONS...] [SPECIFICATION...]
-     |Generate a random codename according to a specification ("A a n" by default).
+  """|Usage: codename [OPTIONS...] [SPECIFICATION] [NUM]
+     |Generate a random codename according to a specification, a number of times
+     |("A a n" 10 times by default).
      |
      |Options:
      |
@@ -215,10 +216,7 @@ val help =
      |an 'n' by a noun.
      |
      |For example, the specification "A-a-n" will produce a code name such as:
-     |"extra-pickled-umbrella"
-     |
-     |Multiple specifications may be given, each of which will be printed on a
-     |separate line.""".stripMargin
+     |"extra-pickled-umbrella".""".stripMargin
 
 def main(args: Array[String]): Unit = {
   val (options, arguments) = args.partition(_.startsWith("-"))
@@ -235,13 +233,25 @@ def main(args: Array[String]): Unit = {
       sys.exit(1)
   }
 
-  val withDefault = if (arguments.isEmpty) Array("A a n") else arguments
+  val (spec: String, num: Int) = arguments match {
+    case Array() => ("A a n", 10)
+    case Array(spec) => (spec, 10)
+    case Array(spec, num) =>
+      val n = num.toIntOption match {
+        case Some(n) =>
+          n
+        case None =>
+          System.err.println(s"Invalid number of repetitions: '${num}' is not an integer")
+          sys.exit(1)
+      }
+      (spec, n)
+  }
 
   def printNext(words: Array[String]) =
     print(words(util.Random.nextInt(words.length)))
 
-  withDefault foreach { arg =>
-    arg foreach {
+  for (_ <- 0 until num) {
+    spec foreach {
       case 'A'   => printNext(adverbs)
       case 'a'   => printNext(adjectives)
       case 'n'   => printNext(nouns)
