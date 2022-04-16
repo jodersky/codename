@@ -12,12 +12,12 @@ obtained from the GitHub releases page, or with the following
 commands:
 
 ```
-wget https://github.com/jodersky/codename/releases/download/v0.1.0/codename_linux_amd64.xz -O - | unxz - > codename && chmod +x ./codename
+wget https://github.com/jodersky/codename/releases/download/v0.2.0/codename_linux_amd64.xz -O - | unxz - > codename && chmod +x ./codename
 ```
 
 ## Examples
 
-- `codename "A a n"`:
+- `codename "A a n" 6`:
 
   >earnestly rare clown
 
@@ -31,7 +31,7 @@ wget https://github.com/jodersky/codename/releases/download/v0.1.0/codename_linu
 
   >otherwise jumpy route
 
-- `codename "a-n"`
+- `codename "a-n" 3`
 
   >mellow-gazelle
 
@@ -39,7 +39,7 @@ wget https://github.com/jodersky/codename/releases/download/v0.1.0/codename_linu
 
   >optuse-joke
 
-- `codename "A a n a a n n"`
+- `codename "A a n a a n n" 1`
 
   >approximately inherent omicron fabulous zillion unit set
 
@@ -55,8 +55,9 @@ Refer to the help message of the utility (`codename --help`) for an
 authoritative answer.
 
 ```
-Usage: codename [OPTIONS...] [SPECIFICATION...]
-Generate a random codename according to a specification ("A a n" by default).
+Usage: codename [OPTIONS...] [SPECIFICATION] [NUM]
+Generate a random codename according to a specification, a number of times
+("A a n" 10 times by default).
 
 Options:
 
@@ -72,8 +73,5 @@ where an 'A' is replaced by a random adverb, an 'a' by an adjective and
 an 'n' by a noun.
 
 For example, the specification "A-a-n" will produce a code name such as:
-"extra-pickled-umbrella"
-
-Multiple specifications may be given, each of which will be printed on a
-separate line.
+"extra-pickled-umbrella".
 ```
