@@ -197,66 +197,24 @@ val nouns = Array(
   "zulu"
 )
 
-val help =
-  """|Usage: codename [OPTIONS...] [SPECIFICATION] [NUM]
-     |Generate a random codename according to a specification, a number of times
-     |("A a n" 10 times by default).
-     |
-     |Options:
-     |
-     |  -h, --help        show help message
-     |  -v, --version     show version information
-     |
-     |Specification:
-     |
-     | SPEC ::= { 'A' | 'a' | 'n' | SEP }
-     | SEP  ::= char
-     |
-     |where an 'A' is replaced by a random adverb, an 'a' by an adjective and
-     |an 'n' by a noun.
-     |
-     |For example, the specification "A-a-n" will produce a code name such as:
-     |"extra-pickled-umbrella".""".stripMargin
+enum Spec {
+  case Adverb
+  case Adjective
+  case Noun
+  case Separator(str: String)
+}
 
-def main(args: Array[String]): Unit = {
-  val (options, arguments) = args.partition(_.startsWith("-"))
+def generate(spec: Spec*): String = {
+  val builder = collection.mutable.StringBuilder()
 
-  options foreach {
-    case "-h" | "--help" =>
-      println(help)
-      sys.exit(0)
-    case "-v" | "--version" =>
-      println(BuildInfo.version)
-      sys.exit(0)
-    case x =>
-      System.err.println(s"Invalid option '${x}'.")
-      sys.exit(1)
+  def next(words: Array[String]) =
+    builder ++= words(util.Random.nextInt(words.length))
+
+  spec.foreach{
+    case Spec.Adverb => next(adverbs)
+    case Spec.Adjective => next(adjectives)
+    case Spec.Noun => next(nouns)
+    case Spec.Separator(str) => builder ++= str
   }
-
-  val (spec: String, num: Int) = arguments match {
-    case Array() => ("A a n", 10)
-    case Array(spec) => (spec, 10)
-    case Array(spec, num) =>
-      val n = num.toIntOption match {
-        case Some(n) =>
-          n
-        case None =>
-          System.err.println(s"Invalid number of repetitions: '${num}' is not an integer")
-          sys.exit(1)
-      }
-      (spec, n)
-  }
-
-  def printNext(words: Array[String]) =
-    print(words(util.Random.nextInt(words.length)))
-
-  for (_ <- 0 until num) {
-    spec foreach {
-      case 'A'   => printNext(adverbs)
-      case 'a'   => printNext(adjectives)
-      case 'n'   => printNext(nouns)
-      case other => print(other)
-    }
-    println("")
-  }
+  builder.result()
 }
