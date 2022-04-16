@@ -3,7 +3,7 @@ names.
 
 ## Building
 This is a scala-native project. The binary can be built by running
-`sbt nativeLink`. Version information is derived from git, with
+`./mill codename.nativeLink`. Version information is derived from git, with
 initial "v" dropped (e.g. the tag v1.2.3 represents version 1.2.3).
 
 ### Download
@@ -18,29 +18,29 @@ wget https://github.com/jodersky/codename/releases/download/v0.1.0/codename_linu
 ## Examples
 
 - `codename "A a n"`:
-  
+
   >earnestly rare clown
-  
+
   >very windy yaw
-  
+
   >awful patchy zero
-  
+
   >henceforth catchy graphite
-  
+
   >nonethless furious aleph
-  
+
   >otherwise jumpy route
 
 - `codename "a-n"`
-  
+
   >mellow-gazelle
-  
+
   >united-five
-  
+
   >optuse-joke
 
 - `codename "A a n a a n n"`
-  
+
   >approximately inherent omicron fabulous zillion unit set
 
 ## Contributing

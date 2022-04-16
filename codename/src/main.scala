@@ -201,7 +201,7 @@ object Names {
 
 }
 
-object Main extends App {
+object Main {
 
   val help =
     """|Usage: codename [OPTIONS...] [SPECIFICATION...]
@@ -226,33 +226,36 @@ object Main extends App {
        |Multiple specifications may be given, each of which will be printed on a
        |separate line.""".stripMargin
 
-  val (options, arguments) = args.partition(_.startsWith("-"))
+  def main(args: Array[String]): Unit = {
 
-  options foreach {
-    case "-h" | "--help" =>
-      println(help)
-      sys.exit(0)
-    case "-v" | "--version" =>
-      println(BuildInfo.version)
-      sys.exit(0)
-    case x =>
-      System.err.println(s"Invalid option '${x}'.")
-      sys.exit(1)
-  }
+    val (options, arguments) = args.partition(_.startsWith("-"))
 
-  val withDefault = if (arguments.isEmpty) Array("A a n") else arguments
-
-  def printNext(words: Array[String]) =
-    print(words(util.Random.nextInt(words.length)))
-
-  withDefault foreach { arg =>
-    arg foreach {
-      case 'A'   => printNext(Names.adverbs)
-      case 'a'   => printNext(Names.adjectives)
-      case 'n'   => printNext(Names.nouns)
-      case other => print(other)
+    options foreach {
+      case "-h" | "--help" =>
+        println(help)
+        sys.exit(0)
+      case "-v" | "--version" =>
+        println(BuildInfo.version)
+        sys.exit(0)
+      case x =>
+        System.err.println(s"Invalid option '${x}'.")
+        sys.exit(1)
     }
-    println("")
+
+    val withDefault = if (arguments.isEmpty) Array("A a n") else arguments
+
+    def printNext(words: Array[String]) =
+      print(words(util.Random.nextInt(words.length)))
+
+    withDefault foreach { arg =>
+      arg foreach {
+        case 'A'   => printNext(Names.adverbs)
+        case 'a'   => printNext(Names.adjectives)
+        case 'n'   => printNext(Names.nouns)
+        case other => print(other)
+      }
+      println("")
+    }
   }
 
 }
