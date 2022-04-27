@@ -8,7 +8,7 @@ val adverbs = Array(
   "awful",
   "awry",
   "basic",
-  "beforehand",
+  // "beforehand",
   "earnestly",
   "essentially",
   "even",
@@ -130,7 +130,7 @@ val adjectives = Array(
   "windy",
   "xenial",
   "xenolithic",
-  "yay",
+  // "yay",
   "zillion",
   "zoic"
 )
