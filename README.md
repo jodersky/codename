@@ -12,7 +12,7 @@ obtained from the GitHub releases page, or with the following
 commands:
 
 ```
-wget https://github.com/jodersky/codename/releases/download/v0.3.0/codename_linux_amd64.xz -O - | unxz - > codename && chmod +x ./codename
+wget https://github.com/jodersky/codename/releases/download/v0.4.0/codename_linux_amd64.xz -O - | unxz - > codename && chmod +x ./codename
 ```
 
 ## Examples
@@ -63,10 +63,12 @@ Options:
 
   -h, --help        show help message
   -v, --version     show version information
+  --entropy         show entropy information instead of generating code
+                    names
 
 Specification:
 
-  SPEC ::= { 'A' | 'a' | 'n' | 'd' | SEP }
+  SPEC ::= { 'A' | 'a' | 'n' | 'd' | 'g' | SEP }
   SEP  ::= char
 
 where the quoted letters will be substituted randomly by the following:
@@ -75,6 +77,7 @@ where the quoted letters will be substituted randomly by the following:
   a: an adjective
   n: a nound
   d: a digit [0-9]
+  g: a greek letter (name)
 
 For example, the specification "A-a-n" will produce a code name such as:
 "extra-pickled-umbrella".
