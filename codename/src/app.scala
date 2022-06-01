@@ -7,10 +7,12 @@ val help =
      |
      |  -h, --help        show help message
      |  -v, --version     show version information
+     |  --entropy         show entropy information instead of generating code
+     |                    names
      |
      |Specification:
      |
-     |  SPEC ::= { 'A' | 'a' | 'n' | 'd' | SEP }
+     |  SPEC ::= { 'A' | 'a' | 'n' | 'd' | 'g' | SEP }
      |  SEP  ::= char
      |
      |where the quoted letters will be substituted randomly by the following:
@@ -19,12 +21,15 @@ val help =
      |  a: an adjective
      |  n: a nound
      |  d: a digit [0-9]
+     |  g: a greek letter (name)
      |
      |For example, the specification "A-a-n" will produce a code name such as:
      |"extra-pickled-umbrella".""".stripMargin
 
 def main(args: Array[String]): Unit = {
   val (options, arguments) = args.partition(_.startsWith("-"))
+
+  var action = "generate"
 
   options foreach {
     case "-h" | "--help" =>
@@ -33,6 +38,8 @@ def main(args: Array[String]): Unit = {
     case "-v" | "--version" =>
       println(BuildInfo.version)
       sys.exit(0)
+    case "--entropy" =>
+      action = "entropy"
     case x =>
       System.err.println(s"Invalid option '${x}'.")
       sys.exit(1)
@@ -57,10 +64,17 @@ def main(args: Array[String]): Unit = {
     case 'a'   => codenames.Spec.Adjective
     case 'n'   => codenames.Spec.Noun
     case 'd'   => codenames.Spec.Digit
+    case 'g'   => codenames.Spec.Greek
     case other => codenames.Spec.Separator(other.toString)
   }
 
-  for (_ <- 0 until num) {
-    println(codenames.generate(spec1: _*))
+  if (action == "generate") {
+    for (_ <- 0 until num) {
+      println(codenames.generate(spec1: _*))
+    }
+  } else if (action == "entropy") {
+    println(f"${codenames.entropy(spec1: _*)}%.2f")
+  } else {
+    sys.error("unknown action " + action)
   }
 }

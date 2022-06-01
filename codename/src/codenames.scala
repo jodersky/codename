@@ -62,6 +62,7 @@ val adjectives = Array(
   "complex",
   "considerate",
   "credible",
+  "cromulent",
   "dark",
   "essential",
   "extraneous",
@@ -82,6 +83,7 @@ val adjectives = Array(
   "imminent",
   "inherent",
   "intrinsic",
+  "invidious",
   "jovial",
   "jumpy",
   "light",
@@ -92,6 +94,7 @@ val adjectives = Array(
   "major",
   "mellow",
   "minor",
+  "negative",
   "new",
   "nodal",
   "open",
@@ -102,6 +105,7 @@ val adjectives = Array(
   "perplex",
   "pickled",
   "polar",
+  "positive",
   "private",
   "rare",
   "random",
@@ -147,17 +151,16 @@ val nouns = Array(
   "cigar",
   "clone",
   "clown",
+  "code",
   "condor",
   "conjugate",
   "cow",
   "crow",
   "dark",
-  "delta",
   "eagle",
   "echo",
   "edition",
   "emu",
-  "five",
   "flume",
   "fountain",
   "giraffe",
@@ -182,27 +185,22 @@ val nouns = Array(
   "loop",
   "low",
   "macro",
+  "mage",
   "module",
   "mutton",
   "nest",
   "nil",
   "nomenclature",
-  "omicron",
-  "one",
-  "open",
   "ostrich",
   "overnumerousness",
   "parcel",
-  "phi",
   "pin",
-  "psi",
   "pyrite",
   "quartz",
   "queen",
   "quill",
   "radish",
   "resource",
-  "rho",
   "rick",
   "route",
   "rules",
@@ -229,8 +227,34 @@ val nouns = Array(
   "yaw",
   "yield",
   "zenith",
-  "zero",
   "zulu"
+)
+
+val greek = Array(
+  "alpha",
+  "beta",
+  "gamma",
+  "delta",
+  "epsilon",
+  "zeta",
+  "eta",
+  "theta",
+  "iota",
+  "kappa",
+  "lambda",
+  "mu",
+  "nu",
+  "xi",
+  "omicron",
+  "pi",
+  "rho",
+  "sigma",
+  "tau",
+  "upsilon",
+  "phi",
+  "chi",
+  "psi",
+  "omega"
 )
 
 enum Spec {
@@ -239,6 +263,7 @@ enum Spec {
   case Noun
   case Separator(str: String)
   case Digit
+  case Greek
 }
 
 def generate(spec: Spec*): String = {
@@ -253,7 +278,25 @@ def generate(spec: Spec*): String = {
     case Spec.Noun => next(nouns)
     case Spec.Separator(str) => builder ++= str
     case Spec.Digit => builder ++= util.Random.nextInt(10).toString
+    case Spec.Greek => next(greek)
 
   }
   builder.result()
+}
+
+def entropy(spec: Spec*): Double = {
+  val partials = spec.map{
+    case Spec.Adverb =>
+      math.log(adverbs.length) / math.log(2)
+    case Spec.Adjective =>
+      math.log(adjectives.length) / math.log(2)
+    case Spec.Noun =>
+      math.log(nouns.length) / math.log(2)
+    case Spec.Digit =>
+      math.log(10) / math.log(2)
+    case Spec.Greek =>
+      math.log(greek.length) / math.log(2)
+    case _ => 0
+  }
+  partials.foldLeft(0.0)(_ + _)
 }
