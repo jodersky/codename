@@ -266,18 +266,42 @@ enum Spec {
   case Greek
 }
 
+class SecureRandom () {
+  def nextInt(limit: Int): Int = {
+    val ch = java.nio.channels.FileChannel.open(
+      java.nio.file.Paths.get("/dev/urandom"),
+      java.nio.file.StandardOpenOption.READ
+    )
+    val bytes = java.nio.ByteBuffer.allocate(4)
+    try {
+      if (ch.read(bytes) != 4) sys.error("didn't read as many bytes as expected")
+    } finally {
+      ch.close()
+    }
+    var r = 0L
+    r |= (bytes.get(0) & 0xff.toLong) << 24
+    r |= (bytes.get(1) & 0xff.toLong) << 16
+    r |= (bytes.get(2) & 0xff.toLong) << 8
+    r |= (bytes.get(3) & 0xff.toLong)
+    r = r % limit
+    r.toInt
+  }
+}
+
+val random = SecureRandom()
+
 def generate(spec: Spec*): String = {
   val builder = collection.mutable.StringBuilder()
 
   def next(words: Array[String]) =
-    builder ++= words(util.Random.nextInt(words.length))
+    builder ++= words(random.nextInt(words.length))
 
   spec.foreach{
     case Spec.Adverb => next(adverbs)
     case Spec.Adjective => next(adjectives)
     case Spec.Noun => next(nouns)
     case Spec.Separator(str) => builder ++= str
-    case Spec.Digit => builder ++= util.Random.nextInt(10).toString
+    case Spec.Digit => builder ++= random.nextInt(10).toString
     case Spec.Greek => next(greek)
 
   }
