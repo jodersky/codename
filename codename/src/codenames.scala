@@ -266,8 +266,9 @@ enum Spec {
   case Greek
 }
 
-class SecureRandom () {
-  def nextInt(limit: Int): Int = {
+class SecureRandom() {
+
+  def nextInt(): Long = {
     val ch = java.nio.channels.FileChannel.open(
       java.nio.file.Paths.get("/dev/urandom"),
       java.nio.file.StandardOpenOption.READ
@@ -279,12 +280,24 @@ class SecureRandom () {
       ch.close()
     }
     var r = 0L
-    r |= (bytes.get(0) & 0xff.toLong) << 24
-    r |= (bytes.get(1) & 0xff.toLong) << 16
-    r |= (bytes.get(2) & 0xff.toLong) << 8
-    r |= (bytes.get(3) & 0xff.toLong)
-    r = r % limit
-    r.toInt
+    r |= (bytes.get(0) & 0xffL) << 24
+    r |= (bytes.get(1) & 0xffL) << 16
+    r |= (bytes.get(2) & 0xffL) << 8
+    r |= (bytes.get(3) & 0xffL)
+    r
+  }
+
+  val MaxInt: Long = 0xffffffffL
+
+  @annotation.tailrec
+  final def nextInt(limit: Int): Int = {
+    val remainder = MaxInt % limit
+    val n = nextInt()
+    if (n > MaxInt - remainder) {
+      nextInt(limit)
+    } else {
+      (n % limit).toInt
+    }
   }
 }
 
