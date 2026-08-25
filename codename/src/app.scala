@@ -26,12 +26,12 @@ val help =
      |For example, the specification "A-a-n" will produce a code name such as:
      |"extra-pickled-umbrella".""".stripMargin
 
-def main(args: Array[String]): Unit = {
+def main(args: Array[String]): Unit =
   val (options, arguments) = args.partition(_.startsWith("-"))
 
   var action = "generate"
 
-  options foreach {
+  options.foreach:
     case "-h" | "--help" =>
       println(help)
       sys.exit(0)
@@ -43,38 +43,31 @@ def main(args: Array[String]): Unit = {
     case x =>
       System.err.println(s"Invalid option '${x}'.")
       sys.exit(1)
-  }
 
-  val (spec0: String, num: Int) = arguments match {
+  val (spec0: String, num: Int) = arguments match
     case Array() => ("A a n", 10)
     case Array(spec) => (spec, 10)
     case Array(spec, num) =>
-      val n = num.toIntOption match {
+      val n = num.toIntOption match
         case Some(n) =>
           n
         case None =>
           System.err.println(s"Invalid number of repetitions: '${num}' is not an integer")
           sys.exit(1)
-      }
       (spec, n)
-  }
 
-  val spec1 = spec0.map{
+  val spec1 = spec0.map:
     case 'A'   => codenames.Spec.Adverb
     case 'a'   => codenames.Spec.Adjective
     case 'n'   => codenames.Spec.Noun
     case 'd'   => codenames.Spec.Digit
     case 'g'   => codenames.Spec.Greek
     case other => codenames.Spec.Separator(other.toString)
-  }
 
-  if (action == "generate") {
-    for (_ <- 0 until num) {
-      println(codenames.generate(spec1: _*))
-    }
-  } else if (action == "entropy") {
-    println(f"${codenames.entropy(spec1: _*)}%.2f")
-  } else {
+  if action == "generate" then
+    for _ <- 0 until num do
+      println(codenames.generate(spec1*))
+  else if action == "entropy" then
+    println(f"${codenames.entropy(spec1*)}%.2f")
+  else
     sys.error("unknown action " + action)
-  }
-}

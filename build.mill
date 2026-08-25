@@ -1,0 +1,47 @@
+//| mill-version: 1.1.8
+
+package build
+
+import mill.*, scalalib.*, scalanativelib.*
+import mill.api.BuildCtx
+
+def gitVersion = Task.Input:
+  os.proc("git", "describe", "--always", "--dirty=-SNAPSHOT", "--match=v[0-9].*")
+    .call(cwd = BuildCtx.workspaceRoot).out.text().tail.trim
+
+object codename extends ScalaNativeModule:
+  def scalaVersion = "3.8.2"
+  def scalaNativeVersion = "0.5.9"
+
+  def releaseMode = scalanativelib.api.ReleaseMode.ReleaseFull
+
+  def generatedSources = Task:
+    val content =
+      s"""|object BuildInfo {
+          |  val version: String = "${gitVersion()}"
+          |}""".stripMargin
+    os.write(Task.dest / "BuildInfo.scala", content)
+    super.generatedSources() ++ Seq(PathRef(Task.dest / "BuildInfo.scala"))
+
+  def strip = Task:
+    os.copy(nativeLink().path, Task.dest / "out")
+    os.proc("strip", Task.dest / "out").call()
+    PathRef(Task.dest / "out")
+
+// assumes that this is run on linux_amd64
+def dist() = Task.Command:
+  val dest = BuildCtx.workspaceRoot / "dist" / gitVersion()
+  BuildCtx.withFilesystemCheckerDisabled:
+    os.remove.all(dest)
+    os.makeDir.all(dest)
+
+    os.proc("xz", "--stdout", "-k", codename.strip().path)
+      .call(stdout = dest / "codename_linux_amd64.xz")
+    os.proc("gzip", "--stdout", "-k", codename.strip().path)
+      .call(stdout = dest / "codename_linux_amd64.gz")
+
+    os.proc("sha256sum", "codename_linux_amd64.xz", "codename_linux_amd64.gz")
+      .call(cwd = dest, stdout = dest / "SHA256SUMS")
+
+    os.proc("gpg", "--armor", "--detach-sign", "SHA256SUMS")
+      .call(cwd = dest)
