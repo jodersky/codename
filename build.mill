@@ -2,16 +2,41 @@
 
 package build
 
-import mill.*, scalalib.*, scalanativelib.*
+import mill.*, scalalib.*, scalanativelib.*, publish.*
 import mill.api.BuildCtx
 
 def gitVersion = Task.Input:
   os.proc("git", "describe", "--always", "--dirty=-SNAPSHOT", "--match=v[0-9].*")
     .call(cwd = BuildCtx.workspaceRoot).out.text().tail.trim
 
-object codename extends ScalaNativeModule:
-  def scalaVersion = "3.8.2"
-  def scalaNativeVersion = "0.5.9"
+object codename extends Module:
+
+  trait Shared extends ScalaModule, PlatformScalaModule, PublishModule:
+    def scalaVersion = "3.8.2"
+
+    def publishVersion = Task:
+      gitVersion()
+
+    def pomSettings = PomSettings(
+      description = "Utility to generate code names",
+      organization = "io.crashbox",
+      url = "https://github.com/jodersky/codename",
+      licenses = Seq(License.`BSD-3-Clause`),
+      versionControl = VersionControl.github("jodersky", "codename"),
+      developers = Seq(
+        Developer("jodersky", "Jakob Odersky", "https://github.com/jodersky")
+      )
+    )
+
+  object jvm extends Shared
+
+  object native extends Shared, ScalaNativeModule:
+    def scalaNativeVersion = "0.5.9"
+
+object app extends ScalaNativeModule:
+  def scalaVersion = codename.native.scalaVersion
+  def scalaNativeVersion = codename.native.scalaNativeVersion
+  def moduleDeps = Seq(codename.native)
 
   def releaseMode = scalanativelib.api.ReleaseMode.ReleaseFull
 
@@ -35,9 +60,9 @@ def dist() = Task.Command:
     os.remove.all(dest)
     os.makeDir.all(dest)
 
-    os.proc("xz", "--stdout", "-k", codename.strip().path)
+    os.proc("xz", "--stdout", "-k", app.strip().path)
       .call(stdout = dest / "codename_linux_amd64.xz")
-    os.proc("gzip", "--stdout", "-k", codename.strip().path)
+    os.proc("gzip", "--stdout", "-k", app.strip().path)
       .call(stdout = dest / "codename_linux_amd64.gz")
 
     os.proc("sha256sum", "codename_linux_amd64.xz", "codename_linux_amd64.gz")

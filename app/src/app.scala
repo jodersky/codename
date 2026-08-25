@@ -19,7 +19,7 @@ val help =
      |
      |  A: an adverb
      |  a: an adjective
-     |  n: a nound
+     |  n: a noun
      |  d: a digit [0-9]
      |  g: a greek letter (name)
      |
@@ -57,17 +57,17 @@ def main(args: Array[String]): Unit =
       (spec, n)
 
   val spec1 = spec0.map:
-    case 'A'   => codenames.Spec.Adverb
-    case 'a'   => codenames.Spec.Adjective
-    case 'n'   => codenames.Spec.Noun
-    case 'd'   => codenames.Spec.Digit
-    case 'g'   => codenames.Spec.Greek
-    case other => codenames.Spec.Separator(other.toString)
+    case 'A'   => codename.Spec.Adverb
+    case 'a'   => codename.Spec.Adjective
+    case 'n'   => codename.Spec.Noun
+    case 'd'   => codename.Spec.Digit
+    case 'g'   => codename.Spec.Greek
+    case other => codename.Spec.Separator(other.toString)
 
   if action == "generate" then
     for _ <- 0 until num do
-      println(codenames.generate(spec1*))
+      println(codename.generate(spec1*))
   else if action == "entropy" then
-    println(f"${codenames.entropy(spec1*)}%.2f")
+    println(f"${codename.entropy(spec1*)}%.2f")
   else
     sys.error("unknown action " + action)

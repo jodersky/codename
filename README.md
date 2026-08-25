@@ -3,7 +3,7 @@ names.
 
 ## Building
 This is a scala-native project. The binary can be built by running
-`./mill codename.nativeLink`. Version information is derived from git, with
+`./mill app.nativeLink`. Version information is derived from git, with
 initial "v" dropped (e.g. the tag v1.2.3 represents version 1.2.3).
 
 ### Download
@@ -75,7 +75,7 @@ where the quoted letters will be substituted randomly by the following:
 
   A: an adverb
   a: an adjective
-  n: a nound
+  n: a noun
   d: a digit [0-9]
   g: a greek letter (name)
 
