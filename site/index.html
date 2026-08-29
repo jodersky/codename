@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>codename</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        --fg: #1a1a1a;
+        --bg: #fdfdfc;
+        --muted: #6b6b66;
+        --border: #d0cfca;
+        --accent: #2f5d50;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --fg: #e8e6e1;
+          --bg: #16171a;
+          --muted: #9a988f;
+          --border: #3a3b3f;
+          --accent: #7fbfa8;
+        }
+      }
+      body {
+        margin: 0 auto;
+        padding: 2rem 1.25rem 4rem;
+        max-width: 40rem;
+        font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        line-height: 1.5;
+        color: var(--fg);
+        background: var(--bg);
+      }
+      h1 { font-size: 1.6rem; margin: 0 0 0.25rem; }
+      p.tagline { margin: 0 0 2rem; color: var(--muted); }
+      label { display: block; font-weight: 600; margin-bottom: 0.4rem; }
+      .controls { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+      input, button {
+        font: inherit;
+        padding: 0.5rem 0.75rem;
+        border-radius: 0.375rem;
+        border: 1px solid var(--border);
+      }
+      input {
+        flex: 1 1 12rem;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        background: var(--bg);
+        color: var(--fg);
+      }
+      button {
+        cursor: pointer;
+        border-color: var(--accent);
+        background: var(--accent);
+        color: var(--bg);
+        font-weight: 600;
+      }
+      button:hover { filter: brightness(1.1); }
+      button.secondary {
+        border-color: var(--border);
+        background: transparent;
+        color: var(--muted);
+        font-weight: 400;
+      }
+      .result {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-top: 2rem;
+      }
+      #output {
+        flex: 1 1 auto;
+        min-height: 2.5rem;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 1.5rem;
+        overflow-wrap: anywhere;
+      }
+      #entropy { color: var(--muted); font-size: 0.875rem; }
+      dl { display: grid; grid-template-columns: auto 1fr; gap: 0.25rem 0.75rem; }
+      dt { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-weight: 600; }
+      dd { margin: 0; color: var(--muted); }
+      details { margin-top: 2.5rem; border-top: 1px solid var(--border); padding-top: 1rem; }
+      summary { cursor: pointer; font-weight: 600; }
+      footer { margin-top: 3rem; color: var(--muted); font-size: 0.875rem; }
+      a { color: var(--accent); }
+    </style>
+  </head>
+  <body>
+    <h1>codename</h1>
+    <p class="tagline">Generate a random code name, suitable as a placeholder for a project name.</p>
+
+    <form id="form">
+      <label for="spec">Specification</label>
+      <div class="controls">
+        <input id="spec" name="spec" value="A a n" spellcheck="false" autocomplete="off">
+        <button type="submit">Generate</button>
+      </div>
+    </form>
+
+    <div class="result">
+      <div id="output"></div>
+      <button id="copy" type="button" class="secondary">Copy</button>
+    </div>
+    <div id="entropy"></div>
+
+    <details>
+      <summary>Specification syntax</summary>
+      <p>Each of the letters below is substituted by a random word. Any other
+        character is copied verbatim, and acts as a separator.</p>
+      <dl>
+        <dt>A</dt><dd>an adverb</dd>
+        <dt>a</dt><dd>an adjective</dd>
+        <dt>n</dt><dd>a noun</dd>
+        <dt>d</dt><dd>a digit [0-9]</dd>
+        <dt>g</dt><dd>a greek letter (name)</dd>
+      </dl>
+      <p>For example, <code>A-a-n</code> produces code names such as
+        <code>extra-pickled-umbrella</code>.</p>
+    </details>
+
+    <footer>
+      Names are generated in your browser with a cryptographically secure
+      random number generator; nothing is sent to a server.
+      <a href="https://github.com/jodersky/codename">Source and command line tool</a>.
+    </footer>
+
+    <script src="main.js"></script>
+    <script>
+      (function () {
+        var form = document.getElementById("form");
+        var spec = document.getElementById("spec");
+        var output = document.getElementById("output");
+        var entropyOut = document.getElementById("entropy");
+        var copy = document.getElementById("copy");
+        var resetLabel;
+
+        function refresh() {
+          output.textContent = generate(spec.value);
+          entropyOut.textContent = entropy(spec.value).toFixed(1) + " bits of entropy";
+          copy.textContent = "Copy";
+        }
+
+        // Copy without the clipboard API, which is only available in secure
+        // contexts (and hence not when opening this page as a local file).
+        function copyFallback(text) {
+          var area = document.createElement("textarea");
+          area.value = text;
+          area.setAttribute("readonly", "");
+          area.style.position = "fixed";
+          area.style.opacity = "0";
+          document.body.appendChild(area);
+          area.select();
+          try {
+            return document.execCommand("copy");
+          } catch (e) {
+            return false;
+          } finally {
+            document.body.removeChild(area);
+          }
+        }
+
+        function copied(ok) {
+          copy.textContent = ok ? "Copied" : "Copy failed";
+          clearTimeout(resetLabel);
+          resetLabel = setTimeout(function () { copy.textContent = "Copy"; }, 1500);
+        }
+
+        form.addEventListener("submit", function (event) {
+          event.preventDefault();
+          refresh();
+        });
+
+        copy.addEventListener("click", function () {
+          var text = output.textContent;
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(
+              function () { copied(true); },
+              function () { copied(copyFallback(text)); }
+            );
+          } else {
+            copied(copyFallback(text));
+          }
+        });
+
+        refresh();
+      })();
+    </script>
+  </body>
+</html>

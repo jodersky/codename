@@ -15,6 +15,11 @@ commands:
 wget https://github.com/jodersky/codename/releases/download/v0.4.0/codename_linux_amd64.xz -O - | unxz - > codename && chmod +x ./codename
 ```
 
+## Interactive website
+
+There's also an [interactive website](https://jodersky.github.io/codename/)
+which allows you to generate codenames in your browser (with ScalaJS).
+
 ## Examples
 
 - `codename "A a n" 6`:

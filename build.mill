@@ -2,7 +2,7 @@
 
 package build
 
-import mill.*, scalalib.*, scalanativelib.*, publish.*
+import mill.*, scalalib.*, scalanativelib.*, scalajslib.*, publish.*
 import mill.api.BuildCtx
 
 def gitVersion = Task.Input:
@@ -32,6 +32,14 @@ object codename extends Module:
 
   object native extends Shared, ScalaNativeModule:
     def scalaNativeVersion = "0.5.9"
+
+  object js extends Shared, ScalaJSModule:
+    def scalaJSVersion = "1.22.0"
+
+object site extends ScalaJSModule:
+  def scalaVersion = codename.js.scalaVersion
+  def scalaJSVersion = codename.js.scalaJSVersion
+  def moduleDeps = Seq(codename.js)
 
 object app extends ScalaNativeModule:
   def scalaVersion = codename.native.scalaVersion
