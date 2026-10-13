@@ -48,6 +48,13 @@ which allows you to generate codenames in your browser (with ScalaJS).
 
   >approximately inherent omicron fabulous zillion unit set
 
+- `codename --hash=$(printf hello | sha256sum | cut -d' ' -f1) "A-a-n"`
+
+  >even-open-yaw
+
+  The same hash always produces the same codename. This can be used to
+  give memorable names to commits, files, etc.
+
 ## Contributing
 
 Contributions are welcome, especially new words! It's hard to describe
@@ -70,6 +77,8 @@ Options:
   -v, --version     show version information
   --entropy         show entropy information instead of generating code
                     names
+  --hash=HEX        derive a single codename from the given hash (in
+                    hexadecimal), instead of generating random ones
 
 Specification:
 

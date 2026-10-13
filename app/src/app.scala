@@ -9,6 +9,8 @@ val help =
      |  -v, --version     show version information
      |  --entropy         show entropy information instead of generating code
      |                    names
+     |  --hash=HEX        derive a single codename from the given hash (in
+     |                    hexadecimal), instead of generating random ones
      |
      |Specification:
      |
@@ -30,6 +32,7 @@ def main(args: Array[String]): Unit =
   val (options, arguments) = args.partition(_.startsWith("-"))
 
   var action = "generate"
+  var hash: Array[Byte] = null
 
   options.foreach:
     case "-h" | "--help" =>
@@ -40,6 +43,16 @@ def main(args: Array[String]): Unit =
       sys.exit(0)
     case "--entropy" =>
       action = "entropy"
+    case x if x.startsWith("--hash=") =>
+      val hex = x.stripPrefix("--hash=")
+      if hex.isEmpty || !hex.forall(c => Character.digit(c, 16) >= 0) then
+        System.err.println(s"Invalid hash '${hex}': not a hexadecimal string.")
+        sys.exit(1)
+      hash = (if hex.length % 2 == 0 then hex else "0" + hex)
+        .grouped(2)
+        .map(Integer.parseInt(_, 16).toByte)
+        .toArray
+      action = "hash"
     case x =>
       System.err.println(s"Invalid option '${x}'.")
       sys.exit(1)
@@ -47,6 +60,9 @@ def main(args: Array[String]): Unit =
   val (spec0: String, num: Int) = arguments match
     case Array() => ("A a n", 10)
     case Array(spec) => (spec, 10)
+    case Array(spec, num) if hash != null =>
+      System.err.println("A number of repetitions cannot be used with --hash.")
+      sys.exit(1)
     case Array(spec, num) =>
       val n = num.toIntOption match
         case Some(n) =>
@@ -67,6 +83,8 @@ def main(args: Array[String]): Unit =
   if action == "generate" then
     for _ <- 0 until num do
       println(codename.generate(spec1*))
+  else if action == "hash" then
+    println(codename.fromHash(hash, spec1*))
   else if action == "entropy" then
     println(f"${codename.entropy(spec1*)}%.2f")
   else

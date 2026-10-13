@@ -28,13 +28,21 @@ object codename extends Module:
       )
     )
 
-  object jvm extends Shared
+  def utestVersion = "0.9.1"
+
+  object jvm extends Shared:
+    object test extends ScalaTests, TestModule.Utest:
+      def utestVersion = codename.utestVersion
 
   object native extends Shared, ScalaNativeModule:
     def scalaNativeVersion = "0.5.9"
+    object test extends ScalaNativeTests, TestModule.Utest:
+      def utestVersion = codename.utestVersion
 
   object js extends Shared, ScalaJSModule:
     def scalaJSVersion = "1.22.0"
+    object test extends ScalaJSTests, TestModule.Utest:
+      def utestVersion = codename.utestVersion
 
 object site extends ScalaJSModule:
   def scalaVersion = codename.js.scalaVersion

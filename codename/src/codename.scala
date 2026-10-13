@@ -265,23 +265,44 @@ enum Spec:
   case Digit
   case Greek
 
-val random = SecureRandom()
+private val random = SecureRandom()
 
-def generate(spec: Spec*): String =
+/** Generate a codename, using `choose` to pick an index in [0, limit) for
+  * every element of the spec that requires a choice. */
+private def generateWith(spec: Spec*)(choose: Int => Int): String =
   val builder = collection.mutable.StringBuilder()
 
   def next(words: Array[String]) =
-    builder ++= words(random.nextInt(words.length))
+    builder ++= words(choose(words.length))
 
   spec.foreach:
     case Spec.Adverb => next(adverbs)
     case Spec.Adjective => next(adjectives)
     case Spec.Noun => next(nouns)
     case Spec.Separator(str) => builder ++= str
-    case Spec.Digit => builder ++= random.nextInt(10).toString
+    case Spec.Digit => builder ++= choose(10).toString
     case Spec.Greek => next(greek)
 
   builder.result()
+
+/** Generate a random codename. */
+def generate(spec: Spec*): String =
+  generateWith(spec*)(random.nextInt)
+
+/** Deterministically derive a codename from a hash.
+  *
+  * Note that the result is NOT guaranteed to be stable across different
+  * versions of this library. In particular, if any word is added or removed
+  * from a word list, the result will change. Hence, while it's ok to use this
+  * function to compute a codename from a hash, you should not use it re-compute
+  * a codename and compare them.
+  */
+def fromHash(hash: Array[Byte], spec: Spec*): String =
+  var n = BigInt(1, hash)
+  generateWith(spec*): limit =>
+    val (q, r) = n /% limit
+    n = q
+    r.toInt
 
 def entropy(spec: Spec*): Double =
   val partials = spec.map:
